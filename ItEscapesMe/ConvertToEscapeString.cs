@@ -103,47 +103,42 @@ namespace RhubarbGeekNz.ItEscapesMe
                 }
                 else
                 {
-                    using (var enumerator = InputString.GetEnumerator())
+                    foreach (UInt16 value in InputString)
                     {
-                        while (enumerator.MoveNext())
+                        if (value > 126 || value < 32)
                         {
-                            int value = enumerator.Current;
-
-                            if (value > 126 || value < 32)
+                            if (value < 32 && ControlCodes.ContainsKey(value))
                             {
-                                if (value < 32 && ControlCodes.ContainsKey(value))
-                                {
-                                    stringBuilder.Append(ControlCodes[value]);
-                                }
-                                else
-                                {
-                                    switch (value)
-                                    {
-                                        case 0xFEFF:
-                                        case 0xFFFE:
-                                            break;
-                                        default:
-                                            stringBuilder.Append("$([char]");
-                                            stringBuilder.Append(value.ToString());
-                                            stringBuilder.Append(")");
-                                            break;
-                                    }
-                                }
+                                stringBuilder.Append(ControlCodes[value]);
                             }
                             else
                             {
                                 switch (value)
                                 {
-                                    case '`':
-                                        stringBuilder.Append("``");
-                                        break;
-                                    case '$':
-                                        stringBuilder.Append("`$");
+                                    case 0xFEFF:
+                                    case 0xFFFE:
                                         break;
                                     default:
-                                        stringBuilder.Append((char)value);
+                                        stringBuilder.Append("$([char]");
+                                        stringBuilder.Append(value.ToString());
+                                        stringBuilder.Append(")");
                                         break;
                                 }
+                            }
+                        }
+                        else
+                        {
+                            switch (value)
+                            {
+                                case '`':
+                                    stringBuilder.Append("``");
+                                    break;
+                                case '$':
+                                    stringBuilder.Append("`$");
+                                    break;
+                                default:
+                                    stringBuilder.Append((char)value);
+                                    break;
                             }
                         }
                     }
