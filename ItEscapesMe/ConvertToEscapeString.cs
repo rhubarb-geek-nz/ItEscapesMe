@@ -80,6 +80,9 @@ namespace RhubarbGeekNz.ItEscapesMe
                                     case '`':
                                         stringBuilder.Append("``");
                                         break;
+                                    case '$':
+                                        stringBuilder.Append("`$");
+                                        break;
                                     default:
                                         stringBuilder.Append((char)value);
                                         break;
@@ -123,6 +126,9 @@ namespace RhubarbGeekNz.ItEscapesMe
                                 {
                                     case '`':
                                         stringBuilder.Append("``");
+                                        break;
+                                    case '$':
+                                        stringBuilder.Append("`$");
                                         break;
                                     default:
                                         stringBuilder.Append((char)value);

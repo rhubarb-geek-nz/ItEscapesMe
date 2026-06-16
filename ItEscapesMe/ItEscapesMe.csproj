@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>RhubarbGeekNz.ItEscapesMe</AssemblyName>
     <Copyright>Copyright © 2026 Roger Brown</Copyright>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <AssemblyTitle>PowerShell EscapeString Cmdlets</AssemblyTitle>
     <Product>ItEscapesMe for PowerShell</Product>
     <Company>rhubarb-geek-nz</Company>

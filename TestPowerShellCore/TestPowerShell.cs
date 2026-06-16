@@ -180,5 +180,16 @@ namespace RhubarbGeekNz.ItEscapesMe
                 Assert.AreEqual("", outputPipeline[0].BaseObject.ToString());
             }
         }
+
+        [TestMethod]
+        public void TestLastDollar()
+        {
+            using (PowerShell powerShell = PowerShell.Create(initialSessionState))
+            {
+                powerShell.AddScript("'$(${$[$$' | ConvertTo-EscapeString");
+                var outputPipeline = powerShell.Invoke();
+                Assert.AreEqual("`$(`${`$[`$`$", outputPipeline[0].BaseObject.ToString());
+            }
+        }
     }
 }
