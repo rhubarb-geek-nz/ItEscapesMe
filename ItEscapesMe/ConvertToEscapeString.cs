@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Management.Automation;
+using System.Reflection;
 using System.Text;
 
 namespace RhubarbGeekNz.ItEscapesMe
@@ -18,13 +19,14 @@ namespace RhubarbGeekNz.ItEscapesMe
         [AllowEmptyCollection()]
         public String InputString;
 
-        static object[] EmptyList= { };
+        private static readonly object[] EmptyList = { };
+        private static readonly MethodInfo EnumerateRunes = typeof(String).GetMethod("EnumerateRunes");
+        private static readonly PropertyInfo GetRuneValue = EnumerateRunes == null ? null : EnumerateRunes.ReturnType.GetProperty("Current").PropertyType.GetProperty("Value");
+        private static readonly IDictionary<int, string> ControlCodes = CreateControlCodes();
 
-        protected override void ProcessRecord()
+        private static IDictionary<int, string> CreateControlCodes()
         {
-            if (InputString != null)
-            {
-                IDictionary<int, string> controlCodes = new Dictionary<int, string>
+            IDictionary<int, string> controlCodes = new Dictionary<int, string>
                 {
                     { 0, "`0" },
                     { 7, "`a" },
@@ -35,28 +37,36 @@ namespace RhubarbGeekNz.ItEscapesMe
                     { 12, "`f" },
                     { 13, "`r" }
                 };
-                StringBuilder stringBuilder=new StringBuilder();
 
-                var method = InputString.GetType().GetMethod("EnumerateRunes");
+            if (EnumerateRunes != null)
+            {
+                controlCodes.Add(27, "`e");
+            }
 
-                if (method != null)
+            return controlCodes;
+        }
+
+        protected override void ProcessRecord()
+        {
+            if (InputString != null)
+            {
+                StringBuilder stringBuilder = new StringBuilder();
+
+                if (EnumerateRunes != null)
                 {
-                    controlCodes.Add(27, "`e");
-
-                    using (IDisposable d = (IDisposable)method.Invoke(InputString, EmptyList))
+                    using (IDisposable d = (IDisposable)EnumerateRunes.Invoke(InputString, EmptyList))
                     {
                         IEnumerator enumerator = (IEnumerator)d;
-                        var property = enumerator.GetType().GetProperty("Current").PropertyType.GetProperty("Value");
 
                         while (enumerator.MoveNext())
                         {
-                            int value = (int)property.GetValue(enumerator.Current);
+                            int value = (int)GetRuneValue.GetValue(enumerator.Current);
 
                             if (value > 126 || value < 32)
                             {
-                                if (value < 32 && controlCodes.ContainsKey(value))
+                                if (value < 32 && ControlCodes.ContainsKey(value))
                                 {
-                                    stringBuilder.Append(controlCodes[value]);
+                                    stringBuilder.Append(ControlCodes[value]);
                                 }
                                 else
                                 {
@@ -101,9 +111,9 @@ namespace RhubarbGeekNz.ItEscapesMe
 
                             if (value > 126 || value < 32)
                             {
-                                if (value < 32 && controlCodes.ContainsKey(value))
+                                if (value < 32 && ControlCodes.ContainsKey(value))
                                 {
-                                    stringBuilder.Append(controlCodes[value]);
+                                    stringBuilder.Append(ControlCodes[value]);
                                 }
                                 else
                                 {
