@@ -64,9 +64,9 @@ namespace RhubarbGeekNz.ItEscapesMe
 
                             if (value > 126 || value < 32)
                             {
-                                if (value < 32 && ControlCodes.ContainsKey(value))
+                                if (value < 32 && ControlCodes.TryGetValue(value, out string controlCode))
                                 {
-                                    stringBuilder.Append(ControlCodes[value]);
+                                    stringBuilder.Append(controlCode);
                                 }
                                 else
                                 {
@@ -107,9 +107,9 @@ namespace RhubarbGeekNz.ItEscapesMe
                     {
                         if (value > 126 || value < 32)
                         {
-                            if (value < 32 && ControlCodes.ContainsKey(value))
+                            if (value < 32 && ControlCodes.TryGetValue(value, out string controlCode))
                             {
-                                stringBuilder.Append(ControlCodes[value]);
+                                stringBuilder.Append(controlCode);
                             }
                             else
                             {
